@@ -17,8 +17,9 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background())
 	defer cancel()
 
-	pool, err = postgres.NewPool(ctx, &cfg.Postgres)
+	pool, err := postgres.NewPool(ctx, &cfg.Postgres)
 	if err != nil {
 		log.Fatalf("pool creation: %v", err)
 	}
+	defer pool.Close()
 }
