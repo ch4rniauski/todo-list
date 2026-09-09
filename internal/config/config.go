@@ -3,7 +3,12 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
+	Http     HttpConfig
 	Postgres PostgresConfig
+}
+
+type HttpConfig struct {
+	Port string `envconfig:"HTTP_PORT" default:"8080"`
 }
 
 type PostgresConfig struct {

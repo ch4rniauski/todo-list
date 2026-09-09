@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"todo-list/internal/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,6 +21,7 @@ func NewPool(ctx context.Context, cfg *config.PostgresConfig) (*pgxpool.Pool, er
 
 	if err := pool.Ping(ctx); err != nil {
 		pool.Close()
+		log.Fatalf("ping postgres: %v", err)
 		return nil, err
 	}
 
