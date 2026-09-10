@@ -9,8 +9,11 @@ import (
 	"syscall"
 	"time"
 	"todo-list/internal/api"
+	"todo-list/internal/api/handler"
 	"todo-list/internal/config"
 	"todo-list/internal/postgres"
+	postgresRepo "todo-list/internal/repository/postgres"
+	"todo-list/internal/service"
 )
 
 func main() {
@@ -32,9 +35,13 @@ func main() {
 	}
 	defer pool.Close()
 
+	todoRepo := postgresRepo.NewTodoRepo(pool)
+	todoService := service.NewTodoService(todoRepo)
+	todoHandler := handler.NewTodoHandler(todoService)
+
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%v", cfg.HTTP.Port),
-		Handler: api.NewRouter(),
+		Handler: api.NewRouter(todoHandler),
 	}
 
 	go func() {

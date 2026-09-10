@@ -11,15 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type TodoTepo struct {
+type TodoRepo struct {
 	pool *pgxpool.Pool
 }
 
-func NewTodoRepo(pool *pgxpool.Pool) *TodoTepo {
-	return &TodoTepo{pool: pool}
+func NewTodoRepo(pool *pgxpool.Pool) *TodoRepo {
+	return &TodoRepo{pool: pool}
 }
 
-func (r *TodoTepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo, error) {
+func (r *TodoRepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo, error) {
 	const query = `
 		INSERT INTO todos (id, title, description, completed, created_at)
 		VALUES ($1, $2, $3, $4, $5)
@@ -44,7 +44,7 @@ func (r *TodoTepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo
 	return &createdTodo, nil
 }
 
-func (r *TodoTepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, error) {
+func (r *TodoRepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, error) {
 	const query = `
 		SELECT id, title, description, completed, created_at
 		FROM todos t
@@ -66,7 +66,7 @@ func (r *TodoTepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, err
 	return &todo, nil
 }
 
-func (r *TodoTepo) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
+func (r *TodoRepo) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
 	const query = `
 		SELECT id, title, description, completed, created_at
 		FROM todos
@@ -86,7 +86,7 @@ func (r *TodoTepo) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
 	return todos, nil
 }
 
-func (r *TodoTepo) UpdateTodo(id uuid.UUID, todo *domain.Todo, ctx context.Context) (*domain.Todo, error) {
+func (r *TodoRepo) UpdateTodo(id uuid.UUID, todo *domain.Todo, ctx context.Context) (*domain.Todo, error) {
 	const query = `
 		UPDATE todos
 		SET title = $1, description = $2, completed = $3
@@ -112,7 +112,7 @@ func (r *TodoTepo) UpdateTodo(id uuid.UUID, todo *domain.Todo, ctx context.Conte
 	return &updatedTodo, nil
 }
 
-func (r *TodoTepo) DeleteTodo(id uuid.UUID, ctx context.Context) error {
+func (r *TodoRepo) DeleteTodo(id uuid.UUID, ctx context.Context) error {
 	const query = `
 		DELETE FROM todos
 		WHERE id = $1

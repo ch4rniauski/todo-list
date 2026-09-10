@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type TodoRepo interface {
+type Todo interface {
 	AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo, error)
 	GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, error)
 	GetAllTodos(ctx context.Context) ([]domain.Todo, error)
