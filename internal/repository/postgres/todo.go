@@ -7,6 +7,7 @@ import (
 	"todo-list/internal/domain"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -45,7 +46,7 @@ func (r *TodoTepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo
 
 func (r *TodoTepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, error) {
 	const query = `
-		SELECT *
+		SELECT id, title, description, completed, created_at
 		FROM todos t
 		WHERE t.id = $1
 	`
@@ -63,4 +64,24 @@ func (r *TodoTepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, err
 	}
 
 	return &todo, nil
+}
+
+func (r *TodoTepo) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
+	const query = `
+		SELECT id, title, description, completed, created_at
+		FROM todos
+	`
+
+	rows, err := r.pool.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("get all todos: %w", err)
+	}
+	defer rows.Close()
+
+	todos, err := pgx.CollectRows(rows, pgx.RowToStructByName[domain.Todo])
+	if err != nil {
+		return nil, fmt.Errorf("get all todos: %w", err)
+	}
+
+	return todos, nil
 }
