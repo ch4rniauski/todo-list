@@ -85,3 +85,29 @@ func (r *TodoTepo) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
 
 	return todos, nil
 }
+
+func (r *TodoTepo) UpdateTodo(id uuid.UUID, todo *domain.Todo, ctx context.Context) (*domain.Todo, error) {
+	const query = `
+		UPDATE todos
+		SET title = $1, description = $2, completed = $3
+		WHERE id = $4
+		RETURNING id, title, description, completed, created_at
+	`
+
+	var updatedTodo domain.Todo
+
+	if err := r.pool.QueryRow(
+		ctx, query,
+		todo.Title, todo.Description, todo.Completed, id,
+	).Scan(
+		&updatedTodo.ID,
+		&updatedTodo.Title,
+		&updatedTodo.Description,
+		&updatedTodo.Completed,
+		&updatedTodo.CreatedAt,
+	); err != nil {
+		return nil, fmt.Errorf("update todo: %w", err)
+	}
+
+	return &updatedTodo, nil
+}
