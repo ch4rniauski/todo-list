@@ -111,3 +111,20 @@ func (r *TodoTepo) UpdateTodo(id uuid.UUID, todo *domain.Todo, ctx context.Conte
 
 	return &updatedTodo, nil
 }
+
+func (r *TodoTepo) DeleteTodo(id uuid.UUID, ctx context.Context) error {
+	const query = `
+		DELETE FROM todos
+		WHERE id = $1
+	`
+
+	result, err := r.pool.Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("delete todo: %w", err)
+	}
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("todo with id %s not found", id)
+	}
+
+	return nil
+}
