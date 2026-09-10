@@ -6,6 +6,7 @@ import (
 	"time"
 	"todo-list/internal/domain"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -26,7 +27,7 @@ func (r *TodoTepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo
 
 	var createdTodo domain.Todo
 
-	err := r.pool.QueryRow(
+	if err := r.pool.QueryRow(
 		ctx, query,
 		todo.ID, todo.Title, todo.Description, false, time.Now().UTC(),
 	).Scan(
@@ -35,10 +36,31 @@ func (r *TodoTepo) AddTodo(todo *domain.Todo, ctx context.Context) (*domain.Todo
 		&createdTodo.Description,
 		&createdTodo.Completed,
 		&createdTodo.CreatedAt,
-	)
-	if err != nil {
+	); err != nil {
 		return nil, fmt.Errorf("add todo: %w", err)
 	}
 
 	return &createdTodo, nil
+}
+
+func (r *TodoTepo) GetTodo(id uuid.UUID, ctx context.Context) (*domain.Todo, error) {
+	const query = `
+		SELECT *
+		FROM todos t
+		WHERE t.id = $1
+	`
+
+	var todo domain.Todo
+
+	if err := r.pool.QueryRow(ctx, query, id).Scan(
+		&todo.ID,
+		&todo.Title,
+		&todo.Description,
+		&todo.Completed,
+		&todo.CreatedAt,
+	); err != nil {
+		return nil, fmt.Errorf("get todo by id: %w", err)
+	}
+
+	return &todo, nil
 }
