@@ -3,11 +3,11 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
-	Http     HttpConfig
+	HTTP     HTTPConfig
 	Postgres PostgresConfig
 }
 
-type HttpConfig struct {
+type HTTPConfig struct {
 	Port string `envconfig:"HTTP_PORT" default:"8080"`
 }
 
@@ -16,7 +16,7 @@ type PostgresConfig struct {
 	Port     string `envconfig:"POSTGRES_PORT" default:"5432"`
 	User     string `envconfig:"POSTGRES_USER" default:"postgres"`
 	Password string `envconfig:"POSTGRES_PASSWORD" default:"postgres"`
-	Database string `envconfig:"POSTGRES_DB" default:"catalog"`
+	Database string `envconfig:"POSTGRES_DB" default:"todo-list"`
 }
 
 func Load() (*Config, error) {

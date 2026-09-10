@@ -11,7 +11,7 @@ import (
 
 func NewPool(ctx context.Context, cfg *config.PostgresConfig) (*pgxpool.Pool, error) {
 	connectionStr := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode-disable",
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database)
 
 	pool, err := pgxpool.New(ctx, connectionStr)

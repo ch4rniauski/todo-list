@@ -33,7 +33,7 @@ func main() {
 	defer pool.Close()
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%v", cfg.Http.Port),
+		Addr:    fmt.Sprintf(":%v", cfg.HTTP.Port),
 		Handler: api.NewRouter(),
 	}
 
